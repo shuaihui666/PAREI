@@ -63,7 +63,6 @@ def initdsecDataset():
                 embeddings = model(**inputs, output_hidden_states=True, return_dict=True).pooler_output.to(device)
             textSim=[]
             emb=torch.cat([emb,embeddings],0)
-            # print("正在获取第"+str(mainIndex)+"个词嵌入")
             textIndex=0
     inputs = tokenizer(textSim, padding=True, truncation=True, return_tensors="pt").to(device)
     with torch.no_grad():
@@ -108,8 +107,6 @@ def BM25Process():
     for Item in Res:
         Res[Index].sort(key=lambda x:x[0])
         Index=Index+1
-    # print(Res[0])
-    # print("BM25 List Length:"+str(len(Res[0])))
     return Res
 
 def setStepTwoMashupId(sumScores):
@@ -175,7 +172,6 @@ def simCsePro(test_mashup_id,rightApi,embeddings,rightMashupScore):
         file=open(resPath+"/demo"+str(leftItem)+".txt",'w+')
         start =time.perf_counter()
         texts.append(description_text[leftItem])
-        # print(str(IndexLeft)+"/"+str(len(test_mashup_id)))
         for rightItem in rightId[IndexLeft]:
             texts.append(description_text[int(rightItem)])        
         for rightItem in rightId[IndexLeft]:
@@ -193,7 +189,6 @@ def simCsePro(test_mashup_id,rightApi,embeddings,rightMashupScore):
 
 def ListRebuild2(BM25_Scores):
     PATH = './data/embed/ma_embedding_100.txt'
-    # 预处理：从ma_embedding_100中提取mashup_id对应的嵌入，排序后直接送入内存
     tempFile = open(PATH, 'r')
     tempFile.readline()  # 跳过word2vec头部行
     Res = []
@@ -267,12 +262,9 @@ def ListRebuild2(BM25_Scores):
                     nodeSimSum[revLineIndex]=nodeSimSum[revLineIndex]+scoreNodeList[topNItem][revLineIndex][1]/trussTopN
                 else:
                     print("error!!!")
-        # print(nodeSimSum)
         for revLineIndex in range(0,len(revNodeList)):
             revNodeList[revLineIndex][1]=revNodeList[revLineIndex][1]/2+nodeSimSum[revLineIndex]/2
         revNodeList.sort(key=lambda x:x[1],reverse=True)
-        # print(len(revNodeList))
-        # print(revNodeList)
         listResTemp=[]
         mashupScores=[]
         for item in topNodeList:
@@ -282,8 +274,6 @@ def ListRebuild2(BM25_Scores):
             mashupScores.append([item[0],item[1]])
         Res.append(topNodeList+listResTemp)
         MashupScoreRes.append(mashupScores)
-        # if(Index==0):
-        #     print(Res)
         Index=Index+1
     return Res,MashupScoreRes
 

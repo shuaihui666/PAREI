@@ -36,7 +36,6 @@ def initdsecDataset():
     for line in edgeFile.readlines():
         Index=line.split()[0]
         value=line.split()[1]
-        # print(Index,value)
         if(Index==nowIndex):
             temp.append(value)
         else:
@@ -63,7 +62,6 @@ def initdsecDataset():
                 embeddings = model(**inputs, output_hidden_states=True, return_dict=True).pooler_output.to(device)
             textSim=[]
             emb=torch.cat([emb,embeddings],0)
-            # print("正在获取第"+str(mainIndex)+"个词嵌入")
             textIndex=0
     inputs = tokenizer(textSim, padding=True, truncation=True, return_tensors="pt").to(device)
     with torch.no_grad():
@@ -77,11 +75,9 @@ def initdsecDataset():
 def BM25Process():
     print("正在使用BM25计算文本相似度。。。")
     
-    # print(description_text)
     all_description=[]
     for index in X:
         all_description.append(description_text[index].split())
-    # print(all_description)
 
     testIndexItem=0
     Res=[]
@@ -108,8 +104,6 @@ def BM25Process():
     for Item in Res:
         Res[Index].sort(key=lambda x:x[0])
         Index=Index+1
-    # print(Res[0])
-    # print("BM25 List Length:"+str(len(Res[0])))
     return Res
 
 def setStepTwoMashupId(sumScores):
@@ -175,7 +169,6 @@ def simCsePro(eval_mashup_id,rightApi,embeddings,rightMashupScore):
         file=open(resPath+"/demo"+str(leftItem)+".txt",'w+')
         start =time.perf_counter()
         texts.append(description_text[leftItem])
-        # print(str(IndexLeft)+"/"+str(len(eval_mashup_id)))
         for rightItem in rightId[IndexLeft]:
             texts.append(description_text[int(rightItem)])        
         for rightItem in rightId[IndexLeft]:
@@ -193,7 +186,6 @@ def simCsePro(eval_mashup_id,rightApi,embeddings,rightMashupScore):
 
 def ListRebuild2(BM25_Scores):
     PATH = './data/embed/ma_embedding_100.txt'
-    # 预处理：从ma_embedding_100中提取mashup_id对应的嵌入，排序后直接送入内存
     tempFile = open(PATH, 'r')
     tempFile.readline()  # 跳过word2vec头部行
     Res = []
@@ -243,13 +235,10 @@ def ListRebuild2(BM25_Scores):
         lsList=npBm25_minMax.tolist()
         for item in range(0,len(revNodeList)):
             revNodeList[item][1]=lsList[item][1]
-        # if(Index==0):
-        #     print(revNodeList)
             
         # 归一化
         for topNItem in range(0,trussTopN):
             nodeSimRes=node_embeddings.similar_by_word(str(topNodeList[topNItem]),topn=3379)
-            # print(len(nodeSimRes))
             nodeTopIndex=0
             for nodeItem in nodeSimRes:
                 if((int(nodeItem[0]) not in topNodeList) and int(nodeItem[0])!=eval_mashup_id[Index]):
@@ -267,12 +256,9 @@ def ListRebuild2(BM25_Scores):
                     nodeSimSum[revLineIndex]=nodeSimSum[revLineIndex]+scoreNodeList[topNItem][revLineIndex][1]/trussTopN
                 else:
                     print("error!!!")
-        # print(nodeSimSum)
         for revLineIndex in range(0,len(revNodeList)):
             revNodeList[revLineIndex][1]=revNodeList[revLineIndex][1]/2+nodeSimSum[revLineIndex]/2
         revNodeList.sort(key=lambda x:x[1],reverse=True)
-        # print(len(revNodeList))
-        # print(revNodeList)
         listResTemp=[]
         mashupScores=[]
         for item in topNodeList:
@@ -282,8 +268,6 @@ def ListRebuild2(BM25_Scores):
             mashupScores.append([item[0],item[1]])
         Res.append(topNodeList+listResTemp)
         MashupScoreRes.append(mashupScores)
-        # if(Index==0):
-        #     print(Res)
         Index=Index+1
     return Res,MashupScoreRes
 
@@ -298,7 +282,6 @@ def evalData(testMashupId):
         AP=0
         for item in testMashupId:
             filepath=resPath+'/demo'+str(item)+".txt"
-            # print(filepath)
             file=open(filepath,'r')
             leftApiList=getApiIdWithMashupId(item)
             rightDataTemp=[]
@@ -324,7 +307,6 @@ def evalData(testMashupId):
                 rightData[keyIndex].append(tempDict[key])
                 keyIndex=keyIndex+1
             rightData.sort(key=lambda x:x[1],reverse=True)#倒序排序
-            # print(rightData)
             recallNum=0
             IndexRe=0
             precisionSumAp=0

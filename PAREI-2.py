@@ -34,7 +34,6 @@ def initdsecDataset():
     for line in edgeFile.readlines():
         Index=line.split()[0]
         value=line.split()[1]
-        # print(Index,value)
         if(Index==nowIndex):
             temp.append(value)
         else:
@@ -61,7 +60,6 @@ def initdsecDataset():
                 embeddings = model(**inputs, output_hidden_states=True, return_dict=True).pooler_output.to(device)
             textSim=[]
             emb=torch.cat([emb,embeddings],0)
-            # print("正在获取第"+str(mainIndex)+"个词嵌入")
             textIndex=0
     inputs = tokenizer(textSim, padding=True, truncation=True, return_tensors="pt").to(device)
     with torch.no_grad():
@@ -75,11 +73,9 @@ def initdsecDataset():
 def BM25Process():
     print("正在使用BM25计算文本相似度。。。")
 
-    # print(description_text)
     all_description=[]
     for index in X:
         all_description.append(description_text[index].split())
-    # print(all_description)
 
     testIndexItem=0
     Res=[]
@@ -106,8 +102,6 @@ def BM25Process():
     for Item in Res:
         Res[Index].sort(key=lambda x:x[0])
         Index=Index+1
-    # print(Res[0])
-    # print("BM25 List Length:"+str(len(Res[0])))
     return Res
 
 def setStepTwoMashupId(sumScores):
@@ -186,7 +180,7 @@ def sim(eval_mashup_id,rightApi,embeddings,rightMashupScore):
         bm25Model = bm25.BM25(bmDesArray)
         scores = bm25Model.get_scores(all_description[leftItem])  # 一次性获取所有文档的分数
         for rightItem in rightId[IndexLeft]:
-            single_score = scores[IndexRight]  # scores[i] 对应 rightId[IndexLeft][i]
+            single_score = scores[IndexRight] 
             Res[IndexLeft].append([])
             Res[IndexLeft][IndexRight].append(rightItem)
             Res[IndexLeft][IndexRight].append(single_score)
@@ -211,17 +205,14 @@ def evalData(testMashupId):
             filepath=resPath+'/demo'+str(item)+".txt"
             file=open(filepath,'r')
             leftApiList=getApiIdWithMashupId(item)
-            # 仅按热度（出现频次）统计，不再读取分数列
             apiHeat={}
             for line in file.readlines():
                 apiId = int(line.split()[0])
                 apiHeat[apiId] = apiHeat.get(apiId, 0) + 1
-            # 按热度降序排列
             rightData = []
             for key, heat in apiHeat.items():
                 rightData.append([str(key), heat])
             rightData.sort(key=lambda x:x[1], reverse=True)
-            # 评估 top-N
             recallNum=0
             IndexRe=0
             precisionSumAp=0
@@ -262,16 +253,13 @@ if __name__=="__main__":
     BM25_Scores=BM25Process()
     #计算BM25分数
 
-    # 直接基于BM25分数构建候选列表，不使用ListRebuild2的图嵌入重排序
     RebuildNodeList=[]
     MashupScoreRes=[]
     for testItem in BM25_Scores:
-        # 按BM25分数降序排列，取前sumResNum个
         testItem.sort(key=lambda x:x[1], reverse=True)
         topItems = testItem[:sumResNum]
         RebuildNodeList.append([item[0] for item in topItems])
         MashupScoreRes.append([[item[0], item[1]] for item in topItems])
-    #直接基于BM25分数构建候选列表
 
     leftDscps,rightData,rightApi,rightMashupScore=setStepTwoDataset(RebuildNodeList,MashupScoreRes)
     #构建步骤二数据集

@@ -36,7 +36,6 @@ def initdsecDataset():
     for line in edgeFile.readlines():
         Index=line.split()[0]
         value=line.split()[1]
-        # print(Index,value)
         if(Index==nowIndex):
             temp.append(value)
         else:
@@ -77,11 +76,9 @@ def initdsecDataset():
 def BM25Process():
     print("正在使用BM25计算文本相似度。。。")
     
-    # print(description_text)
     all_description=[]
     for index in X:
         all_description.append(description_text[index].split())
-    # print(all_description)
 
     testIndexItem=0
     Res=[]
@@ -108,8 +105,6 @@ def BM25Process():
     for Item in Res:
         Res[Index].sort(key=lambda x:x[0])
         Index=Index+1
-    # print(Res[0])
-    # print("BM25 List Length:"+str(len(Res[0])))
     return Res
 
 def setStepTwoMashupId(sumScores):
@@ -193,7 +188,6 @@ def simCsePro(eval_mashup_id,rightApi,embeddings,rightMashupScore):
 
 def ListRebuild2(BM25_Scores):
     PATH = './data/embed/ma_embedding_100.txt'
-    # 预处理：从ma_embedding_100中提取mashup_id对应的嵌入，排序后直接送入内存
     tempFile = open(PATH, 'r')
     tempFile.readline()  # 跳过word2vec头部行
     Res = []
@@ -267,12 +261,9 @@ def ListRebuild2(BM25_Scores):
                     nodeSimSum[revLineIndex]=nodeSimSum[revLineIndex]+scoreNodeList[topNItem][revLineIndex][1]/trussTopN
                 else:
                     print("error!!!")
-        # print(nodeSimSum)
         for revLineIndex in range(0,len(revNodeList)):
             revNodeList[revLineIndex][1]=revNodeList[revLineIndex][1]/2+nodeSimSum[revLineIndex]/2
         revNodeList.sort(key=lambda x:x[1],reverse=True)
-        # print(len(revNodeList))
-        # print(revNodeList)
         listResTemp=[]
         mashupScores=[]
         for item in topNodeList:
@@ -282,8 +273,6 @@ def ListRebuild2(BM25_Scores):
             mashupScores.append([item[0],item[1]])
         Res.append(topNodeList+listResTemp)
         MashupScoreRes.append(mashupScores)
-        # if(Index==0):
-        #     print(Res)
         Index=Index+1
     return Res,MashupScoreRes
 

@@ -87,8 +87,6 @@ def BM25Process():
     for Item in Res:
         Res[Index].sort(key=lambda x:x[0])
         Index=Index+1
-    # print(Res[0])
-    # print("BM25 List Length:"+str(len(Res[0])))
     return Res
 
 

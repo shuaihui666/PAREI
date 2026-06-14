@@ -173,7 +173,6 @@ def simCsePro(eval_mashup_id,rightApi,embeddings,rightMashupScore):
         file=open(resPath+"/demo"+str(leftItem)+".txt",'w+')
         start =time.perf_counter()
         texts.append(description_text[leftItem])
-        # print(str(IndexLeft)+"/"+str(len(eval_mashup_id)))
         for rightItem in rightId[IndexLeft]:
             texts.append(description_text[int(rightItem)])
         for rightItem in rightId[IndexLeft]:
@@ -267,16 +266,13 @@ if __name__=="__main__":
     BM25_Scores=BM25Process()
     #计算BM25分数
 
-    # 直接基于BM25分数构建候选列表，不使用ListRebuild2的图嵌入重排序
     RebuildNodeList=[]
     MashupScoreRes=[]
     for testItem in BM25_Scores:
-        # 按BM25分数降序排列，取前sumResNum个
         testItem.sort(key=lambda x:x[1], reverse=True)
         topItems = testItem[:sumResNum]
         RebuildNodeList.append([item[0] for item in topItems])
         MashupScoreRes.append([[item[0], item[1]] for item in topItems])
-    #直接基于BM25分数构建候选列表
 
     leftDscps,rightData,rightApi,rightMashupScore=setStepTwoDataset(RebuildNodeList,MashupScoreRes)
     #构建步骤二数据集
