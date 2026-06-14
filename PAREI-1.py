@@ -31,7 +31,7 @@ def initdsecDataset():
         description_text.append(line.split(' =->= ')[1].replace("\n",''))
     file_description.close()
     #获取MA关系
-    edgeFile=open('./data/mashup_api_graph.txt','r',encoding='utf-8')
+    edgeFile=open('./data/mashup_api_graph.edgelist','r',encoding='utf-8')
     temp=[]
     nowIndex='719'
     for line in edgeFile.readlines():
